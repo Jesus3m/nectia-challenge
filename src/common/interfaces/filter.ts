@@ -5,4 +5,5 @@ export interface Filter {
   page_size: number;
   sort: string;
   sort_by: string;
+  owner?: string;
 }

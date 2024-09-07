@@ -36,13 +36,21 @@ export class DataAccess<T extends BaseEntity> implements Repository<T> {
   }
 
   async getAll(filter?: FilterQuery): Promise<T[]> {
-    const aggregation = [];
+    const aggregation: Array<Record<string, any>> = [
+      {
+        $match: {
+          deletedAt: null,
+          user_id: new ObjectId(filter!.owner),
+        },
+      },
+    ];
 
     if (filter?.filter_by) {
       aggregation.push({
         $match: {
           [filter.filter_by]: { $regex: filter.filter, $options: "i" },
           deletedAt: null,
+          user_id: new ObjectId(filter.owner),
         },
       });
     }
@@ -71,7 +79,10 @@ export class DataAccess<T extends BaseEntity> implements Repository<T> {
   }
 
   getTotal(filter: FilterQuery): Promise<number> {
-    let match: Record<string, any> = {};
+    let match: Record<string, any> = {
+      user_id: new ObjectId(filter.owner),
+      deletedAt: null,
+    };
 
     if (filter?.filter_by) {
       match[filter.filter_by] = { $regex: filter.filter, $options: "i" };

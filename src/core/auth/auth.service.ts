@@ -21,7 +21,6 @@ export class AuthService {
   }
 
   async me(token: string) {
-    console.log(token);
     if (!token) throw new Unauthorized("User not found");
     const user = await this.repository.findBy(token);
     if (!user) throw new Unauthorized("User not found");

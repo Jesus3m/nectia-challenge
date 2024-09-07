@@ -210,13 +210,11 @@ paths:
         - in: query
           name: filter_by
           required: false
-          example: "email"
           schema:
             type: string
         - in: query
           name: filter
           required: false
-          example: "john"
           schema:
             type: string
       responses:
