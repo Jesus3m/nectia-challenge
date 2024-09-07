@@ -80,7 +80,7 @@ Resources:
       Role: !GetAtt BaseServiceRole.Arn
       Layers:
         - !Ref ServiceCommonLayer
-      FunctionName: !Sub "${Cluster}-order-service"
+      FunctionName: !Sub "${Cluster}-base-service"
       CodeUri: ./dist
       Description: Base Service
       Handler: infra/ports/handler/index.handler
@@ -89,11 +89,13 @@ Resources:
       Environment:
         Variables:
           DATABASE_URL: "{{resolve:ssm:/DATABASE_URL}}"
+          JWT_SECRET: "{{resolve:ssm:/JWT_SECRET}}"
+          JWT_EXPIRES_IN: "{{resolve:ssm:/JWT_EXPIRE_IN}}"
 
   BaseServiceRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub "${Cluster}-order-service-role"
+      RoleName: !Sub "${Cluster}-base-service-role"
       Description: Base service lambda role
       AssumeRolePolicyDocument:
         Version: 2012-10-17
