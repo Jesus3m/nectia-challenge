@@ -1,5 +1,5 @@
 import "express-async-errors";
-import "./alias";
+import "../../../alias";
 // Imports
 import { MongoConnection } from "@common/config/connections/mongodb";
 import { HttpServer } from "@common/config/server/index";

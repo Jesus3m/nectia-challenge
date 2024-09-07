@@ -7,7 +7,7 @@ info:
 servers:
   - url: http://localhost:3005/v1
     description: Servidor local
-  - url: http://localhost:3001
+  - url: https://nectia.api.empiretive.com/v1
     description: API desarrollo
 
 tags:
