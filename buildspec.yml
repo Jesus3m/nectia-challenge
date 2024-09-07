@@ -19,8 +19,8 @@ phases:
       - yarn build:layers
       # produce the deployment artifacts
       - aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET_BUILD_ARTIFACTS --output-template package.yml
-      # - aws cloudformation package --s3-bucket pretxii-lambda-back --template-file template.yml --output-template-file gen/template-generated.yaml
-      # - aws cloudformation deploy --template-file gen/template-generated.yaml --stack-name pretxii-back --parameter-overrides Environment=development --capabilities CAPABILITY_NAMED_IAM
+      - aws s3 cp ./docs s3://$S3_BUCKET_DOCS --recursive
+
 artifacts:
   files:
     - layers/common/**/*

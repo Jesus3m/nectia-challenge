@@ -9,4 +9,4 @@ const server = new HttpServer();
 HttpServer.setRouter(router);
 const client = new MongoConnection();
 
-server.listen(3005);
+server.listen(Number(process.env.PORT) || 3005);

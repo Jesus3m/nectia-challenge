@@ -3,12 +3,16 @@ info:
   title: Nectia - API de Usuarios y Tareas
   description: API para la autenticación de usuarios y gestión de tareas programadas.
   version: 1.0.0
+  contact:
+    name: "Jesus Manuel Moreno"
+    url: "https://www.linkedin.com/in/jesus-manuel-moreno/"
+    email: jesusmanuelmorenomantilla@gmail.com
 
 servers:
-  - url: http://localhost:3005/v1
-    description: Servidor local
   - url: https://nectia.api.empiretive.com/v1
     description: API desarrollo
+  - url: http://localhost:3005/v1
+    description: Servidor local
 
 tags:
   - name: Autenticación
