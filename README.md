@@ -1,6 +1,6 @@
 # Nectia - Gestión de Tareas y Usuarios
 
-Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticación de usuarios, basada en JSON Web Tokens (JWT). La arquitectura utilizada es hexagonal, y ha sido desplegada en AWS Lambda, y documentada con OpenAPI.
+Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticación de usuarios, basada en JSON Web Tokens (JWT). La arquitectura utilizada es hexagonal, y ha sido desplegada en AWS Lambda, y documentada con OpenAPI [Documentación Swagger](https://docs.nectia.empiretive.com)
 
 ## Tabla de Contenidos
 - [Requisitos](#requisitos)
@@ -11,9 +11,8 @@ Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticació
     - [Flujo](#flujo)
     - [Dominio](#dominio)
     - [Acceso a Datos](#acceso-a-datos)
-- [Dominio](#dominio)
-- [Documentación](#documentación)
-- [Autenticación](#autenticación)
+- [Solución del reto](#solución-del-reto)
+- [Despliegue](#despliegue)
 - [Tecnologías](#tecnologías)
 
 ## Requisitos
@@ -25,7 +24,7 @@ Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticació
 
 1. Clona el repositorio:
     ```bash
-    git clone https://github.com/tu-repo/api-crud-tasks.git
+    git clone https://github.com/Jesus3m/nectia-challenge.git
     ```
 2. Instala las dependencias:
     ```bash
@@ -55,7 +54,7 @@ Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticació
 
 ## Documentación
 
-El proyecto ha sido desplegado en aws lambda y api gateway, puedes acceder a la API de desarrollo con el siguiente enlace: ``https://nectia.api.empiretive.com/v1`` y puedes ver la documentación en swagger y hacer peticiones en el siguiente enlace: ``https://nectia.api.empiretive.com/v1/docs``
+El proyecto ha sido desplegado en aws lambda y api gateway, puedes acceder a la API de desarrollo con el siguiente enlace: ``https://nectia.api.empiretive.com/v1`` y puedes ver la documentación en swagger y hacer peticiones en el siguiente enlace: [Documentación Swagger](https://docs.nectia.empiretive.com)
 
 ## Estructura del Proyecto
 
@@ -116,3 +115,36 @@ Si tenemos una entidad ```User``` en nuestro sistema, el dominio podría estar c
 
 La capa de acceso a datos ubicada en ```infra``` son clases que utilizan el cliente de la BD, y realizan consultas para leer o escribir dichos datos. Esta clase es dependiente del dominio tanto a nivel de esquema de datos (``entity``) como a nivel de implementación (``repository``)
 
+
+## Solución del reto
+## Autenticación
+
+Los servicios estan protegidos por JSON Web Tokens (JWT) que contienen información de usuario, tiempo de expiración y otros datos. El uso de este token es de forma segura y confiable, ya que solo el servidor puede leerlo.
+
+Para acceder a la informacion de usuarios o tareas, necesitas obtener un token, puedes hacerlo a traves del endpoint de ``/auth/login`` con tu usuario y contraseña, si no cuentas con uno, puedes registrar uno en el endpoint de ``/auth/register``. Luego puedes hacer peticiones a la API con el token.
+
+## CRUD de usuarios y tareas
+
+a traves de la rutas ``/user`` y ``/task``, siguiendo el estándar REST para la relacion entre metodos y acciones puedes aplicar operaciones sobre los usuarios siempre y cuando estes autenticado con el jwt: ``GET`` para obtener, ``POST`` para crear, ``PUT`` para actualizar y ``DELETE`` para borrar.
+
+vease la [Documentación Swagger](https://docs.nectia.empiretive.com) para mas detalles y hacer pruebas
+
+
+# Despliegue
+
+Para el despliegue de la API se creo una canalización de Codepipeline, para crear un flujo de CI/CD, con lo cual, cada nuevo merge a la rama principal de proyecto inicia un proceso de compilación sobre el código fuente que posteriormente es desplegado en aws Lambda y API Gateway a traves de Cloudformation
+
+# Tecnologías
+
+- Node.js >= v18
+- MongoDB
+- OpenAPI
+- Swagger
+- Typescript
+- Express
+- JsonWebToken
+- Bcrypt
+- AWS Lambda
+- AWS API Gateway
+- AWS Codepipeline
+- AWS Cloudformation
