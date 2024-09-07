@@ -1,3 +1,4 @@
+import "express-async-errors";
 import "./alias";
 // Imports
 import { HttpServer } from "@common/config/server";

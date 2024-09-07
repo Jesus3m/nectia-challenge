@@ -1,3 +1,4 @@
+import { handleError } from "@common/middlewares/error";
 import cors from "cors";
 import express, { Application, Router } from "express";
 export class HttpServer {
@@ -27,5 +28,7 @@ export class HttpServer {
 
   static setRouter(router: Router) {
     HttpServer.app.use("/v1", router);
+
+    return HttpServer.app.use(handleError);
   }
 }

@@ -9,6 +9,11 @@ servers:
     description: Servidor local
   - url: http://localhost:3001
     description: API desarrollo
+
+tags:
+  - name: Autenticación
+  - name: Usuarios
+  - name: Tareas
 paths:
   /auth/login:
     post:
@@ -67,7 +72,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 
-  /tasks:
+  /task:
     get:
 
       tags: ["Tareas"]
@@ -102,7 +107,7 @@ paths:
         '201':
           description: Tarea creada con éxito
 
-  /tasks/{id}:
+  /task/{id}:
     get:
       tags: ["Tareas"]
       summary: Obtener tarea por ID
@@ -166,6 +171,121 @@ paths:
       responses:
         '204':
           description: Tarea eliminada exitosamente
+  /user:
+    get:
+      tags: ["Usuarios"]
+      summary: Obtener usuarios
+      description: Obtener la información de todos los usuarios
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          example: "1"
+          schema:
+            type: number
+        - in: query
+          name: page_size
+          required: false
+          example: "10"
+          schema:
+            type: number
+        - in: query
+          name: sort_by
+          required: false
+          example: "id"
+          schema:
+            type: string
+        - in: query
+          name: sort
+          required: false
+          example: "asc"
+          schema:
+            type: string
+        - in: query
+          name: filter_by
+          required: false
+          example: "email"
+          schema:
+            type: string
+        - in: query
+          name: filter
+          required: false
+          example: "john"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /user/{id}:
+    get:
+      tags: ["Usuarios"]
+      summary: Obtener usuario por ID
+      description: Obtener la información de un usuario por su ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          example: "user123"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: Usuario no encontrado
+    put:
+      tags: ["Usuarios"]
+      summary: Actualizar usuario por ID
+      description: Permite actualizar un usuario existente.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del usuario
+      requestBody:
+        description: Información del usuario actualizado
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+
+    delete:
+      tags: ["Usuarios"]
+      summary: Eliminar usuarios por ID
+      description: Permite eliminar un usuario específico por su ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la usuario
+      responses:
+        '204':
+          description: Usuario eliminad exitosamente
 components:
   securitySchemes:
     bearerAuth:
@@ -198,7 +318,16 @@ components:
         email:
           type: string
           format: email
-          example: "usuario@email.com"
+          example: "john.doe@email.com"
+        name:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        phone:
+          type: string
+          example: "+56 2 3314 9579"
 
     User:
       type: object
@@ -213,13 +342,19 @@ components:
           type: string
           format: email
           example: "usuario@email.com"
+        name:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        phone:
+          type: string
+          example: "+56 2 3314 9579"
 
     Task:
       type: object
       properties:
-        id:
-          type: string
-          example: "task123"
         title:
           type: string
           example: "Tarea programada"
