@@ -38,7 +38,8 @@ export class UserModel
     const result = await this.collection.findOne(
       {
         $or: or,
-      },
+        deletedAt: null,
+      } as any,
       {
         projection: {
           _id: 1,

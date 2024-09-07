@@ -6,4 +6,7 @@ export interface User {
   password?: string;
   phone?: string;
   token?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }

@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: API de Usuarios y Tareas Programadas
+  title: Nectia - API de Usuarios y Tareas
   description: API para la autenticación de usuarios y gestión de tareas programadas.
   version: 1.0.0
 

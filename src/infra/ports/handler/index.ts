@@ -14,11 +14,16 @@ import {
 } from "aws-lambda";
 import { type Application } from "express";
 import { MongoClient } from "mongodb";
+import router from "../rest";
 
 let serverless: Handler<APIGatewayProxyEvent, any> &
   ConfigureResult<APIGatewayProxyEvent, any>;
 
+const server = new HttpServer();
+HttpServer.setRouter(router);
+
 const app: Application = new HttpServer().get();
+
 let conn: MongoClient = null as any;
 
 async function asyncTask() {

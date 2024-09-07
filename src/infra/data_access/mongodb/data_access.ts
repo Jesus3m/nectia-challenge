@@ -42,6 +42,7 @@ export class DataAccess<T extends BaseEntity> implements Repository<T> {
       aggregation.push({
         $match: {
           [filter.filter_by]: { $regex: filter.filter, $options: "i" },
+          deletedAt: null,
         },
       });
     }
