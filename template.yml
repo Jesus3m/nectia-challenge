@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Alegra Free Base cluster definitions
+
+Parameters:
+  Cluster:
+    Type: String
+    Default: nectia
+  Environment:
+    Type: String
+    Default: dev
+
+Conditions:
+  IsDevEnvironment: !Equals [!Ref Environment, "dev"]
+
+Globals:
+  Function:
+    Handler: index.handler
+    Runtime: nodejs20.x
+    Timeout: 300
+
+Resources:
+  ########## API Definition ############
+
+  # API BASE
+  BaseApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub "${Cluster}-api"
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Tags:
+        - Key: System
+          Value: Base
+        - Key: Cluster
+          Value: !Ref Cluster
+
+  BaseApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref BaseApi
+      Description: Deployment base api
+      StageName: !Ref Environment
+    DependsOn:
+      - BaseServiceProxyMethodANY
+      - BaseServiceLambda
+      # - BaseServiceMethodANY
+
+  BaseApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      Description: Base Api usage plan
+      UsagePlanName: !Sub "${Cluster}-api"
+
+  BaseProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BaseApi
+      ParentId: !GetAtt BaseApi.RootResourceId
+      PathPart: "{proxy+}"
+
+
+######## Base Service ########
+  # Layers
+  ServiceCommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${Cluster}-service-layer"
+      ContentUri: ./layers/common/
+      CompatibleRuntimes:
+        - nodejs18.x
+      RetentionPolicy: Delete
+
+  # Base Lambda
+  BaseServiceLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      MemorySize: 1024
+      Role: !GetAtt BaseServiceRole.Arn
+      Layers:
+        - !Ref ServiceCommonLayer
+      FunctionName: !Sub "${Cluster}-order-service"
+      CodeUri: ./dist
+      Description: Base Service
+      Handler: infra/ports/handler/index.handler
+      Tags:
+        Cluster: !Ref Cluster
+      Environment:
+        Variables:
+          DATABASE_URL: "{{resolve:ssm:/DATABASE_URL}}"
+
+  BaseServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${Cluster}-order-service-role"
+      Description: Base service lambda role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+      Policies:
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                  - lambda:InvokeAsync
+                Resource: "*"
+          PolicyName: InvokeServiceLambda
+
+  BaseServiceProxyMethodANY:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: ANY
+      RestApiId: !Ref BaseApi
+      ResourceId: !Ref BaseProxyResource
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations
+          - LambdaArn: !GetAtt BaseServiceLambda.Arn
+
+  BaseServiceProxyGatewayInvoke:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt BaseServiceLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join
+        - ""
+        - - "arn:aws:execute-api:"
+          - !Sub "${AWS::Region}:${AWS::AccountId}:"
+          - !Ref BaseApi
+          - "/*/*/*"

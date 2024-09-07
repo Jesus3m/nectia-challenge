@@ -1,0 +1,27 @@
+version: 0.2
+env: 
+  git-credential-helper: yes
+phases:
+  install:
+    commands:
+      - git -v
+      - npm install -g yarn
+      - yarn -v
+  pre_build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - yarn install
+  build:
+    commands:
+      # build js files
+      - yarn build
+      # build layers
+      - yarn build:layers
+      # produce the deployment artifacts
+      - aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET_BUILD_ARTIFACTS --output-template package.yml
+      # - aws cloudformation package --s3-bucket pretxii-lambda-back --template-file template.yml --output-template-file gen/template-generated.yaml
+      # - aws cloudformation deploy --template-file gen/template-generated.yaml --stack-name pretxii-back --parameter-overrides Environment=development --capabilities CAPABILITY_NAMED_IAM
+artifacts:
+  files:
+    - layers/common/**/*
+    - package.yml
