@@ -1,0 +1,236 @@
+openapi: 3.0.0
+info:
+  title: API de Usuarios y Tareas Programadas
+  description: API para la autenticación de usuarios y gestión de tareas programadas.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3005/v1
+    description: Servidor local
+  - url: http://localhost:3001
+    description: API desarrollo
+paths:
+  /auth/login:
+    post:
+      summary: Login de usuario
+      tags: ["Autenticación"]
+      description: Permite a un usuario iniciar sesión con su nombre de usuario y contraseña.
+      requestBody:
+        description: Credenciales del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCredentials'
+      responses:
+        '200':
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5..."
+        '401':
+          description: Credenciales incorrectas
+
+  /auth/register:
+    post:
+      tags: ["Autenticación"]
+      summary: Registro de usuario
+      description: Permite registrar un nuevo usuario.
+      requestBody:
+        description: Información de registro del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: Usuario registrado con éxito
+
+  /auth/me:
+    get:
+      tags: ["Autenticación"]
+      summary: Obtener usuario autenticado
+      description: Retorna la información del usuario autenticado.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Información del usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /tasks:
+    get:
+
+      tags: ["Tareas"]
+      summary: Obtener todas las tareas
+      description: Retorna todas las tareas del usuario autenticado.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de tareas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+    post:
+      tags: ["Tareas"]
+      summary: Crear nueva tarea
+      description: Permite crear una nueva tarea programada.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Información de la nueva tarea
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Tarea creada con éxito
+
+  /tasks/{id}:
+    get:
+      tags: ["Tareas"]
+      summary: Obtener tarea por ID
+      description: Retorna una tarea específica por su ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la tarea
+      responses:
+        '200':
+          description: Tarea encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Tarea no encontrada
+
+    put:
+      tags: ["Tareas"]
+      summary: Actualizar tarea por ID
+      description: Permite actualizar una tarea existente.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la tarea
+      requestBody:
+        description: Información de la tarea actualizada
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Tarea actualizada exitosamente
+
+    delete:
+      tags: ["Tareas"]
+      summary: Eliminar tarea por ID
+      description: Permite eliminar una tarea específica por su ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la tarea
+      responses:
+        '204':
+          description: Tarea eliminada exitosamente
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserCredentials:
+      type: object
+      properties:
+        user:
+          type: string
+          example: "usuario123"
+        password:
+          type: string
+          format: password
+          example: "secreto"
+
+    UserRegistration:
+      type: object
+      properties:
+        user:
+          type: string
+          example: "usuario123"
+        password:
+          type: string
+          format: password
+          example: "secreto"
+        email:
+          type: string
+          format: email
+          example: "usuario@email.com"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "user123"
+        user:
+          type: string
+          example: "usuario123"
+        email:
+          type: string
+          format: email
+          example: "usuario@email.com"
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "task123"
+        title:
+          type: string
+          example: "Tarea programada"
+        description:
+          type: string
+          example: "Descripción de la tarea"
+        dueDate:
+          type: string
+          format: date-time
+          example: "2024-09-30T10:00:00Z"
+        status:
+          type: string
+          enum: [pending, completed]
+          example: "pending"
