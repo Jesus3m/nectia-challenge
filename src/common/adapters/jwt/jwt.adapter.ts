@@ -11,13 +11,9 @@ export class JWTAdapter implements JsonWebTokenAdapter {
   }
 
   async verify(token: string): Promise<any> {
-    try {
-      const verify = await jwt.verify(token, config.JWT.SECRET!, {
-        ignoreExpiration: true,
-      });
-      return verify;
-    } catch (error) {
-      throw error;
-    }
+    const verify = await jwt.verify(token, config.JWT.SECRET!, {
+      ignoreExpiration: true,
+    });
+    return verify;
   }
 }

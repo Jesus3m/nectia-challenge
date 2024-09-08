@@ -46,7 +46,7 @@ export class Controller<T> {
     if (!data) {
       return res.status(400).json(new Data({}, "Bad Request", 404));
     }
-    return res.json(new Data(data, "success.create", 201));
+    return res.status(201).json(new Data(data, "success.create", 201));
   }
 
   async update(req: Request, res: Response) {

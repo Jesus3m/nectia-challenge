@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 import { config } from "@common/config";
 import { MongoClient } from "mongodb";
 

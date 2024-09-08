@@ -79,7 +79,7 @@ export class DataAccess<T extends BaseEntity> implements Repository<T> {
   }
 
   getTotal(filter: FilterQuery): Promise<number> {
-    let match: Record<string, any> = {
+    const match: Record<string, any> = {
       user_id: new ObjectId(filter.owner),
       deletedAt: null,
     };

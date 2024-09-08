@@ -7,18 +7,23 @@
     "build:layers": "yarn --cwd layers/common/nodejs install",
     "dev": "nodemon -T --legacy-watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "lint": "eslint **/*.ts --fix"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@types/aws-lambda": "^8.10.145",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.5.2",
     "dotenv": "^16.4.5",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.4.0"
   },
   "dependencies": {
     "@types/cors": "^2.8.17",
