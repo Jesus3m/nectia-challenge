@@ -88,6 +88,8 @@ src/
 
 ### Flujo
 
+Para el flujo de la aplicación se ha utilizado un diagrama mermaid para mostrar la arquitectura de la aplicación y la interacción entre sus distintas capas
+
 ```mermaid
 sequenceDiagram
     Router->>+Controller: Envia el request
@@ -101,12 +103,15 @@ sequenceDiagram
     Controller-->>Router: Responde a la solicitud
 ```
 
+### Puertos
+Dentro del directorio ``infra`` se definen los puertos de la aplicación, estos no son mas que puntos de entrada a la lógica del dominio (``core``), en este caso unicamente se crearon puertos de rest api (``rest``) y un manejador principal de lambda (``handler``), pero esta capa puede extenderse y crear mas interfaces de conexión como webhooks, websockets, graphql, etc.
+
 ### Dominio
 
 Dentro del directorio ```/core``` se gestiona el dominio de cada una de las entidades de la aplicación, este dominio a su vez se divide en varias capas que distinguen la responsabilidad y acciones de cada entidad, por ejemplo:
 
 Si tenemos una entidad ```User``` en nuestro sistema, el dominio podría estar compuesto por:
-- Repositorio: ```user.repository.ts``` Esta capa es una interface que define los métodos necesario para acceder a los datos almacenados en BD
+- Repositorio: ```user.repository.ts``` Esta capa es una interface que abstrae y define los métodos necesario para acceder a los datos almacenados en BD
 - Servicios: ```user.service.ts``` Maneja la logica del negocio asociada con el dominio, en este caso usuarios, es en esta capa donde agregamos validaciones, conversiones, y utilizamos los repositorios y adaptadores, para acceder a la información
     - Casos de Uso: ```register_user.usecase.ts``` El servicio puede ademas acceder a casos de uso, que son componentes mas específicos para resolver un problema puntual, estos sirven para agrupar lógica y procesos relacionados con un caso de uso especifico y de esta manera encapsular mejor la solución al problemas cuando esta es muy compleja
 - Entidades: ```user.entity.ts``` La entidad es una interface que define el esquema de datos del dominio
@@ -121,7 +126,7 @@ La capa de acceso a datos ubicada en ```infra``` son clases que utilizan el clie
 
 Los servicios estan protegidos por JSON Web Tokens (JWT) que contienen información de usuario, tiempo de expiración y otros datos. El uso de este token es de forma segura y confiable, ya que solo el servidor puede leerlo.
 
-Para acceder a la informacion de usuarios o tareas, necesitas obtener un token, puedes hacerlo a traves del endpoint de ``/auth/login`` con tu usuario y contraseña, si no cuentas con uno, puedes registrar uno en el endpoint de ``/auth/register``. Luego puedes hacer peticiones a la API con el token.
+Para acceder a la informacion de usuarios o tareas, necesitas obtener un token, puedes hacerlo a traves del endpoint de ``/auth/login`` con tu usuario y contraseña, si no cuentas con uno, puedes registrar uno en el endpoint de ``/auth/register``. Luego puedes hacer peticiones a la API con el token agregándolo en cada petición en el encabezado ``Authorization: Bearer {token}``.
 
 ## CRUD de usuarios y tareas
 

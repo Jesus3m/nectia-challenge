@@ -40,10 +40,17 @@ export class DataAccess<T extends BaseEntity> implements Repository<T> {
       {
         $match: {
           deletedAt: null,
-          user_id: new ObjectId(filter!.owner),
         },
       },
     ];
+
+    if (filter?.owner) {
+      aggregation.push({
+        $match: {
+          user_id: new ObjectId(filter.owner),
+        },
+      });
+    }
 
     if (filter?.filter_by) {
       aggregation.push({

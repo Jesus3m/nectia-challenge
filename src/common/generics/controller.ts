@@ -29,7 +29,6 @@ export class Controller<T> {
       page_size: Number(req.query.page_size) as number,
       sort: req.query.sort as string,
       sort_by: req.query.sort_by as string,
-      owner: req.user?._id,
     });
     res.json(
       new Data(data.data, "success.getAll", 200, {
