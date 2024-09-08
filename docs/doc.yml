@@ -231,6 +231,8 @@ paths:
     get:
       tags: ["Usuarios"]
       summary: Obtener usuario por ID
+      security:
+        - bearerAuth: []
       description: Obtener la información de un usuario por su ID
       parameters:
         - in: path
