@@ -2,6 +2,8 @@
 
 Esta API proporciona endpoints para la gestión de tareas (CRUD) y autenticación de usuarios, basada en JSON Web Tokens (JWT). La arquitectura utilizada es hexagonal, y ha sido desplegada en AWS Lambda, y documentada con OpenAPI [Documentación Swagger](https://docs.nectia.empiretive.com)
 
+#### Nota - Puedes descargar el archivo doc.yml de la carpeta docs, o directamente en la documentación swagger, e importarlo en post como una colección
+
 ## Tabla de Contenidos
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)

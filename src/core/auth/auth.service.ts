@@ -1,4 +1,5 @@
 import { Unauthorized } from "@common/errors/unauthorized.error";
+import { ResourceErrors } from "@common/interfaces/errors";
 import { UserRepository } from "@core/users/user.repository";
 import { UserCredentials } from "./dto/user_credentials.dto";
 import { UserRegister } from "./dto/user_register.dto";
@@ -13,7 +14,7 @@ export class AuthService {
   ) {}
   async login(userCredentials: UserCredentials) {
     const user = await this.repository.findBy(userCredentials.user);
-    if (!user) throw new Unauthorized("User not found");
+    if (!user) throw new Unauthorized(ResourceErrors.NOT_FOUND);
 
     const result = await this.loginUserUseCase.execute(userCredentials);
 
@@ -21,9 +22,9 @@ export class AuthService {
   }
 
   async me(token: string) {
-    if (!token) throw new Unauthorized("User not found");
+    if (!token) throw new Unauthorized(ResourceErrors.NOT_FOUND);
     const user = await this.repository.findBy(token);
-    if (!user) throw new Unauthorized("User not found");
+    if (!user) throw new Unauthorized(ResourceErrors.NOT_FOUND);
     delete user.password;
     return user;
   }

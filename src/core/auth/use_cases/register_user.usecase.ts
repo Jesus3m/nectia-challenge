@@ -1,6 +1,8 @@
 import { EncryptAdapter } from "@common/adapters/encrypt/encrypt.adapter";
 import { JsonWebTokenAdapter } from "@common/adapters/jwt/json_web_token.adapter";
+import { BaseError } from "@common/errors";
 import { Unauthorized } from "@common/errors/unauthorized.error";
+import { AuthorizationError, ResourceErrors } from "@common/interfaces/errors";
 import { UserRepository } from "@core/users/user.repository";
 import { UserRegister } from "../dto/user_register.dto";
 
@@ -16,7 +18,7 @@ export class RegisterUserUseCase {
     const userUsed = await this.repository.findBy(user.user);
 
     if (emailUsed || userUsed) {
-      throw new Unauthorized("User already exists");
+      throw new Unauthorized(AuthorizationError.USER_EXISTS);
     }
 
     const passwordHash = await this.encrypt.hash(user.password);
@@ -25,7 +27,7 @@ export class RegisterUserUseCase {
     const created = await this.repository.create<UserRegister>(user);
 
     if (!created) {
-      throw new Error("Error creating user");
+      throw new BaseError(ResourceErrors.CREATING_ERROR, 400);
     }
     const jwt = await this.jwt.sign(created);
 
